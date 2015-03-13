@@ -7,7 +7,65 @@ http.createServer(function(req,res){
 	//console.log(urlObj.pathname);
 	//console.log(urlObj.search);
 	//console.log(urlObj.query["q"]);
-	if(urlObj.pathname.indexOf("getcity") !=-1){
+	if(urlObj.pathname.indexOf("comment")!=-1){
+		console.log("comment route");
+		if(req.method==="POST"){
+			console.log("POST comment route");
+		var jsonData="";
+		req.on('data',function(chunk){
+		   jsonData+= chunk;
+		});
+		req.on('end',function(){
+		   var reqObj = JSON.parse(jsonData);
+		   console.log(reqObj);
+		   console.log("Name: "+reqObj.Name);
+		   console.log("Comment: "+reqObj.Comment);
+		   var MongoClient = require('mongodb').MongoClient;
+		   MongoClient.connect("mongodb://localhost/weather",function(err,db){
+			if(err) throw err;
+			db.collection('comments').insert(reqObj,function(err,records){
+				console.log("Record added as " + records[0]._id);
+				
+			});
+		   });
+		   res.writeHead(200);
+		   res.end("");
+		   
+		});
+		}
+		if(req.method==="GET"){
+			var finalresult;
+			console.log("In GET routine");
+			var MongoClient = require('mongodb').MongoClient;
+			MongoClient.connect("mongodb://localhost/weather",function(err,db){
+				if(err) throw err;
+				db.collection("comments",function(err,comments){
+					if(err) throw err;
+					comments.find(function(err,items){
+						items.toArray(function(err,itemArr){
+							console.log("Document Array: ");
+							console.log(itemArr);
+							finalresult = itemArr;
+							//console.log("this is the result: "+finalresult);
+							res.writeHead(200);
+							res.end(JSON.stringify(itemArr));
+							//end(itemArr);
+						});
+						//res.writeHead(200);
+						//res.end("test");
+					});
+					//res.writeHead(200);
+					//res.end("test");
+				});
+				//ires.writeHead(200);
+				//res.end("test");
+			});
+		
+
+		}
+		
+	}
+	else if(urlObj.pathname.indexOf("getcity") !=-1){
 	//console.log("In Rest service");
 	fs.readFile('html/cities.dat.txt', function(err, data){
 	if(err) throw err;
@@ -36,6 +94,7 @@ http.createServer(function(req,res){
 	}
 	else
 	{
+	//console.log("i should not be here");
 	fs.readFile(ROOT_DIR + urlObj.pathname,function(err,data){
 		if(err){
 			res.writeHead(404);
