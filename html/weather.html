@@ -12,7 +12,40 @@ Suggestion: <span id ="txtHint" ></span></br>
 <p>City</p>
 <textarea id="dispcity">No City</textarea>
 <div id="weather">No Weather</div>
+<form id="commentForm" action="">
+   Name: <input type="text" id="Name" value="Mickey"><br>
+   comment: <input type="text" id="Comment" value="Hello"><br>
+</form>
+<button id="commentSubmit">Submit Comment</button>
+<button id="showComments">Show Comments</button>
+<div id ="json"></div>
+<div id="commentsSection"></div>
 <script>
+$("#showComments").click(function(){
+	var url = "http://52.10.245.138/comment";
+	$.getJSON(url,function(data){
+		var everything;
+		everything = "<ul>";
+		$.each(data, function(i,item){
+			everything+= "<li> Name: "+data[i].Name+" Comment: "+data[i].Comment;
+		});
+		everything+= "</ul>";
+		$("#commentsSection").html(everything);
+	});
+});
+$("#commentSubmit").click(function(){
+	var myobj = {Name:$("#Name").val(),Comment:$("#Comment").val()};
+	jobj = JSON.stringify(myobj);
+	$("#json").text(jobj);
+	var url = "http://52.10.245.138/comment";
+	console.log("about to do a post");
+	$.post(url,jobj,function(data,textStatus){
+		
+		console.log("should be doing a post");
+		}); 
+	
+	
+});
 $("#button").click(function(e){
 	$("#dispcity").text($("#cityfield").val());
 	var myurl = "https://api.wunderground.com/api/cf32827594dd1a4a/geolookup/conditions/q/UT/";
