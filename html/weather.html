@@ -37,12 +37,18 @@ $("#commentSubmit").click(function(){
 	var myobj = {Name:$("#Name").val(),Comment:$("#Comment").val()};
 	jobj = JSON.stringify(myobj);
 	$("#json").text(jobj);
-	var url = "http://52.10.245.138/comment";
+	var url = "/comment";
 	console.log("about to do a post");
-	$.post(url,jobj,function(data,textStatus){
-		
-		console.log("should be doing a post");
-		}); 
+	jQuery.ajax({
+		url: url,
+		type: "POST",
+		data:jobj,
+		dataType:"json",
+		contentType:"application/json; charset=utf-8",
+		success:function(){
+		console.log("Success");
+		}
+	}); 
 	
 	
 });
@@ -74,7 +80,7 @@ $("#button").click(function(e){
 });
 $("#cityfield").keyup(function(){
 	var url;
-	url = "52.10.245.138/getcity?q=";
+	url = "/getcity?q=";
 	url+= $("#cityfield").val();
 	console.log("URL "+url);
 	$.getJSON(url,function(data){
